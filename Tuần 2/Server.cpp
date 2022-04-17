@@ -13,7 +13,7 @@
 #define RES_PREFIX_SUCCESS '+'
 #define RES_PREFIX_FAIL '-'
 #define RES_INFIX_SPLIT '\a'
-#define ERROR_ILLEGALPREFIX 12001
+#define ERROR_REQ_PREFIXNOTRECOGNIZED 12001
 
 int main(int argc, char *argv[])
 {
@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
 		if (getaddrinfo(requestMess + 1, NULL, &hints, &result) != 0)
 		{
 			printf("Get address info failed with error code %d\n", WSAGetLastError());
-			char errnoStr[BUFF_SIZE] = "";
-			sprintf_s(errnoStr, BUFF_SIZE, "%d", WSAGetLastError());
+			char errorCodeStr[BUFF_SIZE] = "";
+			sprintf_s(errorCodeStr, BUFF_SIZE, "%d", WSAGetLastError());
 			responseMess[0] = RES_PREFIX_FAIL;
-			strcat_s(responseMess, BUFF_SIZE, errnoStr);
+			strcat_s(responseMess, BUFF_SIZE, errorCodeStr);
 		}
 		else
 		{
@@ -95,10 +95,10 @@ int main(int argc, char *argv[])
 		if (getnameinfo((struct sockaddr *)&addr, sizeof(struct sockaddr), hostname, NI_MAXHOST, serverInfo, NI_MAXSERV, NI_NUMERICSERV) != 0)
 		{
 			printf("Get host name info failed with error code %d\n", WSAGetLastError());
-			char errnoStr[BUFF_SIZE] = "";
-			sprintf_s(errnoStr, BUFF_SIZE, "%d", WSAGetLastError());
+			char errorCodeStr[BUFF_SIZE] = "";
+			sprintf_s(errorCodeStr, BUFF_SIZE, "%d", WSAGetLastError());
 			responseMess[0] = RES_PREFIX_FAIL;
-			strcat_s(responseMess, BUFF_SIZE, errnoStr);
+			strcat_s(responseMess, BUFF_SIZE, errorCodeStr);
 		}
 		else
 		{
@@ -109,16 +109,16 @@ int main(int argc, char *argv[])
 	else
 	{
 		printf("Unexpected request \"%s\"\n", requestMess);
-		char errnoStr[BUFF_SIZE] = "";
-		sprintf_s(errnoStr, BUFF_SIZE, "%d", ERROR_ILLEGALPREFIX);
+		char errorCodeStr[BUFF_SIZE] = "";
+		sprintf_s(errorCodeStr, BUFF_SIZE, "%d", ERROR_REQ_PREFIXNOTRECOGNIZED);
 		responseMess[0] = RES_PREFIX_FAIL;
-		strcat_s(responseMess, BUFF_SIZE, errnoStr);
+		strcat_s(responseMess, BUFF_SIZE, errorCodeStr);
 	}
 
 	// Handle response message
 	if (responseMess[0] != RES_PREFIX_FAIL && responseMess[0] != RES_PREFIX_SUCCESS)
 	{
-		printf("Unexpected response \"%s\"\n", requestMess);
+		printf("Response prefix not recognized in message \"%s\"\n", requestMess);
 	}
 	else if (responseMess[0] == RES_PREFIX_FAIL)
 	{
@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
 		{
 			printf("Not found information\n");
 		}
-		else if (errorCode == ERROR_ILLEGALPREFIX)
+		else if (errorCode == ERROR_REQ_PREFIXNOTRECOGNIZED)
 		{
-			printf("Request message incompleted\n");
+			printf("Resquest prefix not recognized\n");
 		}
 		else
 		{
@@ -144,7 +144,8 @@ int main(int argc, char *argv[])
 		{
 			for (int i = 0; i < strlen(responseMessWithoutPrefix); ++i)
 			{
-				if (responseMessWithoutPrefix[i] == RES_INFIX_SPLIT) {
+				if (responseMessWithoutPrefix[i] == RES_INFIX_SPLIT)
+				{
 					responseMessWithoutPrefix[i] = '\n';
 				}
 			}
