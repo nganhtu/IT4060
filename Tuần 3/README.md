@@ -2,7 +2,7 @@ Bài tập tuần này còn tồn đọng: nếu TCP_Client gửi thông điệp
 
 Tham khảo: https://stackoverflow.com/questions/29313067/why-does-inserting-a-printf-statement-make-my-function-work-correctly
 
-Workflow:
+Workflow ứng dụng socket TCP có xử lý truyền dòng:
 
 1. Client dùng khối lệnh chứa hàm `send()` để gửi một hoặc nhiều request đến server.
 2. Server dùng khối lệnh chứa hàm `recv()` để nhận một hoặc nhiều request từ client tới khi gặp delimiter ở cuối thông điệp.
