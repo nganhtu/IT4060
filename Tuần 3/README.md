@@ -12,4 +12,4 @@ Workflow ứng dụng socket TCP có xử lý truyền dòng:
 
 Xem file test1.cpp trong bài tập tuần để hiểu rõ hơn hành vi của client.
 
-Rõ ràng có sơ hở: nếu nhiều request của client ngẫu nhiên bị tách khiến delimiter nằm cuối một thông điệp nào đó, server sẽ không nhận được phần thông điệp còn lại.
+Rõ ràng có sơ hở: nếu nhiều request của client ngẫu nhiên bị tách khiến delimiter nằm cuối một thông điệp nào đó, server sẽ không nhận được phần thông điệp còn lại. Tuy nhiên, lỗi này chỉ xảy ra khi có NHIỀU request được chia ra gửi NHIỀU lần. Vì test của thầy không có trường hợp đó (chỉ có (1) nhiều request gửi 1 lần và (2) 1 request chia ra gửi nhiều lần) nên có thể tạm bỏ qua lỗi này.
