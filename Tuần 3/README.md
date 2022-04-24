@@ -7,6 +7,7 @@ Workflow:
 1. Client dùng khối lệnh chứa hàm `send()` để gửi một hoặc nhiều request đến server.
 2. Server dùng khối lệnh chứa hàm `recv()` để nhận một hoặc nhiều request từ client tới khi gặp delimiter ở cuối thông điệp.
 3. Server xử lý từng request.
-4. Sau khi xử lý xong mỗi request, server gửi trả response tương ứng tới client.
+4. Sau khi xử lý xong mỗi request, server dùng khối lệnh chứa hàm `send()` để gửi trả response tương ứng tới client.
 5. Client dựa trên số request mình gửi để gọi số khối lệnh chứa hàm `recv()` tương ứng.
-6. 
+
+Xem file test1.cpp trong bài tập tuần để hiểu rõ hơn hành vi của client.
