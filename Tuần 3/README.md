@@ -11,3 +11,5 @@ Workflow ứng dụng socket TCP có xử lý truyền dòng:
 5. Client dựa trên số request mình gửi để gọi số khối lệnh chứa hàm `recv()` tương ứng.
 
 Xem file test1.cpp trong bài tập tuần để hiểu rõ hơn hành vi của client.
+
+Rõ ràng có sơ hở: nếu nhiều request của client ngẫu nhiên bị tách khiến delimiter nằm cuối một thông điệp nào đó, server sẽ không nhận được phần thông điệp còn lại.
