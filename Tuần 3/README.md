@@ -4,8 +4,8 @@ Tham khảo: https://stackoverflow.com/questions/29313067/why-does-inserting-a-p
 
 Workflow ứng dụng socket TCP có xử lý truyền dòng:
 
-1. Client dùng khối lệnh chứa hàm `send()` để gửi một hoặc nhiều request đến server.
-2. Server dùng khối lệnh chứa hàm `recv()` để nhận một hoặc nhiều request từ client tới khi gặp delimiter ở cuối thông điệp.
+1. Client dùng (các) khối lệnh chứa hàm `send()` để gửi một, nhiều, hoặc từng phần request đến server.
+2. Server dùng khối lệnh chứa hàm `recv()` để nhận một hoặc nhiều request từ client, dừng lại khi gặp delimiter ở cuối thông điệp.
 3. Server xử lý từng request.
 4. Sau khi xử lý xong mỗi request, server dùng khối lệnh chứa hàm `send()` để gửi trả response tương ứng tới client.
 5. Client dựa trên số request mình gửi để gọi số khối lệnh chứa hàm `recv()` tương ứng.
