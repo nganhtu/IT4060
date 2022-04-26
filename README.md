@@ -76,12 +76,13 @@ sockaddr_in receiverAddr;
 // cần phải biết địa chỉ của receiver trước khi thực thi hàm sendto()
 sendto(sender, buff, strlen(buff), 0, (sockaddr *)&receiverAddr, sizeof(receiverAddr));
 ```
-- Hàm `recvfrom()` nhận dữ liệu từ một nguồn nào đó (xác định sau khi hàm thực thi). Lưu ý rằng nếu kích thước thông điệp gửi tới lớn hơn bộ đệm UDP socket bên nhận thì chỉ nhận phần dữ liệu vừa đủ với kích thước bộ đệm, phần còn lại bị bỏ qua và hàm trả về `SOCKET_ERROR`. Ví dụ:
+- Hàm `recvfrom()` nhận dữ liệu từ một nguồn nào đó (xác định sau khi hàm thực thi). Ví dụ:
 ```c++
 SOCKET receiver = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 sockaddr_in senderAddr;
 int senderAddrLen = sizeof(senderAddr);
 ret = recvfrom(receiver, buff, BUFF_SIZE, 0, (sockaddr *)&senderAddr, &senderAddrLen);
 ```
+> Lưu ý rằng nếu kích thước thông điệp gửi tới lớn hơn bộ đệm UDP socket bên nhận thì chỉ nhận phần dữ liệu vừa đủ với kích thước bộ đệm, phần còn lại bị bỏ qua và hàm trả về `SOCKET_ERROR`.
 
 ## Xây dựng ứng dụng với TCP socket
