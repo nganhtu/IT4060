@@ -8,7 +8,7 @@ Chỉ thị tiền xử lý:
 
 # Bài 2. Cơ bản về lập trình mạng
 
-## Một số hàm cơ bản:
+## Một số hàm cơ bản
 - Khởi tạo và giải phóng WinSock:
 ```c++
 WSADATA wsaData;
