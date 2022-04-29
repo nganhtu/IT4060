@@ -8,4 +8,4 @@ kết quả là sai (câu 3 quiz 2), trong khi đó:
 ```c++
 addr.sin_addr.s_addr = htonl(INADDR_ANY);
 ```
-kết quả lại là đúng (?!)
+kết quả lại là đúng (?!) (câu 2 quiz 3)
