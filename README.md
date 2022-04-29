@@ -86,3 +86,53 @@ ret = recvfrom(receiver, buff, BUFF_SIZE, 0, (sockaddr *)&senderAddr, &senderAdd
 > Lưu ý rằng nếu kích thước thông điệp gửi tới lớn hơn bộ đệm UDP socket bên nhận thì chỉ nhận phần dữ liệu vừa đủ với kích thước bộ đệm, phần còn lại bị bỏ qua và hàm trả về `SOCKET_ERROR`.
 
 ## Xây dựng ứng dụng với TCP socket
+- Sơ đồ chung:
+	- Server: `socket()` → `bind()` → `listen()` → {`accept()` → {`recv()` và `send()`} → `shutdown()` → `closesocket()`  → quay lại `accept()`}
+	- Client: `socket()` → `connect()` → {`send()` và `recv()`} → `shutdown()` → `closesocket()`
+- Hàm `listen()` đặt socket sang trạng thái lắng nghe kết nối. Ví dụ:
+```c++
+SOCKET listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+sockaddr_in serverAddr;
+serverAddr.sin_family = AF_INET;
+serverAddr.sin_port = htons(5500);
+inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+bind(listenSock, (sockaddr *)&serverAddr, sizeof(serverAddr));
+listen(listenSock, 10);
+```
+- Hàm `accept()` khởi tạo một socket gắn với kết nối TCP nằm trong hàng đợi. Ví dụ:
+```c++
+sockaddr_in clientAddr;
+int clientAddrLen = sizeof(clientAddr);
+SOCKET connSock = accept(listenSock, (sockaddr *)&clientAddr, &clientAddrLen);
+```
+- Hàm `connect()` gửi yêu cầu thiết lập kết nối tới server. Ví dụ:
+```c++
+SOCKET client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+sockaddr_in serverAddr;
+serverAddr.sin_family = AF_INET;
+serverAddr.sin_port = htons(5500);
+inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+connect(client, (sockaddr *)&serverAddr, sizeof(serverAddr));
+```
+- Hàm `send()` gửi dữ liệu bằng socket. Ví dụ:
+```c++
+send(client, buff, strlen(buff), 0);
+```
+- Hàm `recv()` nhận dữ liệu bằng socket. Ví dụ:
+```c++
+recv(client, buff, BUFF_SIZE, 0);`
+```
+> Lưu ý: trên UDP socket có thể sử dụng hàm `connect()` để thiết lập địa chỉ của phía bên kia khi truyền tin. Nếu UDP socket đã dùng hàm `connect()` để kiểm tra, có thể sử dụng `send()` thay cho `sendto()` hay hàm `recv()` thay cho `recvfrom()`.
+- Hàm `shutdown()` đóng kết nối trên socket (theo 1 hoặc 2 chiều gửi và nhận). Ví dụ:
+```c++
+shutdown(client, SD_RECEIVE);
+```
+- Kích thước bộ đệm TCP socket trên Windows 8.1 là 64kB.
+	- Hàm `send()` dừng vòng lặp nếu dữ liệu gửi đi lớn hơn kích thước bộ đệm của ứng dụng.
+	- `Hàm recv()`: khi kích thước bộ đệm nhận nhỏ hơn kích thước thông điệp gửi tới, cần sử dụng vòng lặp để đọc được hết dữ liệu.
+- Giải pháp truyền theo dòng byte trong TCP:
+	- Giải pháp 1: sử dụng thông điệp có kích thước cố định.
+	- Giải pháp 2: sử dụng mẫu ký tự phân tách (delimiter).
+	- Giải pháp 3: gửi kèm kích thước thông điệp.
+
+## Xây dựng giao thức cho ứng dụng
