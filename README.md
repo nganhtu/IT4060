@@ -129,7 +129,7 @@ shutdown(client, SD_RECEIVE);
 ```
 - Kích thước bộ đệm TCP socket trên Windows 8.1 là 64kB.
 	- Hàm `send()` dừng vòng lặp nếu dữ liệu gửi đi lớn hơn kích thước bộ đệm của ứng dụng.
-	- `Hàm recv()`: khi kích thước bộ đệm nhận nhỏ hơn kích thước thông điệp gửi tới, cần sử dụng vòng lặp để đọc được hết dữ liệu.
+	- Hàm `recv()`: khi kích thước bộ đệm nhận nhỏ hơn kích thước thông điệp gửi tới, cần sử dụng vòng lặp để đọc được hết dữ liệu.
 - Giải pháp truyền theo dòng byte trong TCP:
 	- Giải pháp 1: sử dụng thông điệp có kích thước cố định.
 	- Giải pháp 2: sử dụng mẫu ký tự phân tách (delimiter).
