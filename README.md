@@ -136,3 +136,7 @@ shutdown(client, SD_RECEIVE);
 	- Giải pháp 3: gửi kèm kích thước thông điệp.
 
 ## Xây dựng giao thức cho ứng dụng
+
+Xem ở cuối slide https://users.soict.hust.edu.vn/tungbt/it4060/Lec02.BasicSocket.pdf
+
+# Bài 3. Các chế độ vào ra trên socket
