@@ -1,4 +1,4 @@
-// UDP_Client.cpp : Defines the entry point for the console application.
+// Client.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -11,6 +11,7 @@
 #define BUFF_SIZE 2048
 
 #pragma comment(lib, "ws2_32.lib")
+
 int main(int argc, char *argv[])
 {
     // Step 1: Initiate Winsock
@@ -23,10 +24,10 @@ int main(int argc, char *argv[])
 
     // Step 2: Construct socket
     SOCKET client;
-    client = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (client == INVALID_SOCKET)
     {
-        printf("Error %d: cannot create server socket\n", WSAGetLastError());
+        printf("Error %d: cannot create client socket\n", WSAGetLastError());
     }
     printf("Client started!\n");
 
@@ -51,50 +52,56 @@ int main(int argc, char *argv[])
     serverAddr.sin_port = htons(serverPort);
     inet_pton(AF_INET, serverAddrStr, &serverAddr.sin_addr);
 
-    // Step 4: Communicate with server
+    // Step 4: Connect to server
+    if (connect(client, (sockaddr *)&serverAddr, sizeof(serverAddr)))
+    {
+        printf("Error %d: cannot connect to server\n", WSAGetLastError());
+    }
+    printf("Connected to server!\n");
+
+    // Step 5: Communicate with server
     char buff[BUFF_SIZE];
-    int ret, serverAddrLen = sizeof(serverAddr);
     while (1)
     {
-        // Send message
+        // Send request
         printf("Send to server: ");
         gets_s(buff, BUFF_SIZE);
-        int messageLen = strlen(buff);
-        if (messageLen == 0)
+        int requestLen = strlen(buff);
+        if (requestLen == 0)
         {
             break;
         }
-        // TODO: Add delimiter to message
-        ret = sendto(client, buff, messageLen, 0, (sockaddr *)&serverAddr, serverAddrLen);
+
+        int ret = send(client, buff, requestLen, 0);
         if (ret == SOCKET_ERROR)
         {
-            printf("Error %d: cannot send mesage\n", WSAGetLastError());
+            printf("Error %d: cannot send message to server\n", WSAGetLastError());
         }
 
-        // Receive echo message
-        ret = recvfrom(client, buff, BUFF_SIZE, 0, (sockaddr *)&serverAddr, &serverAddrLen);
+        // Receive  response
+        ret = recv(client, buff, BUFF_SIZE, 0);
         if (ret == SOCKET_ERROR)
         {
             if (WSAGetLastError() == WSAETIMEDOUT)
             {
-                printf("Time-out!\n");
+                printf("Error %d: time-out\n", WSAGetLastError());
             }
             else
             {
-                printf("Error %d: cannot receive message\n", WSAGetLastError());
+                printf("Error %d: cannot receive message from server\n", WSAGetLastError());
             }
         }
         else if (strlen(buff) > 0)
         {
             buff[ret] = '\0';
-            printf("Receive from server: %s\n", buff);
+            printf("Received from server: %s\n", buff);
         }
     } // end while
 
-    // Step 5: Close socket
+    // Step 6: Close socket
     closesocket(client);
 
-    // Step 6: Terminate Winsock
+    // Step 7: Terminate Winsock
     WSACleanup();
 
     return 0;

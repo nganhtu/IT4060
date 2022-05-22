@@ -1,4 +1,4 @@
-// TCP_Client.cpp : Defines the entry point for the console application.
+// Client.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -9,9 +9,6 @@
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 5500
 #define BUFF_SIZE 2048
-#define RES_PREFIX_SUCCESS '+'
-#define RES_PREFIX_FAIL '-'
-#define ENDING_DELIMITER "\r\n"
 
 #pragma comment(lib, "ws2_32.lib")
 int main(int argc, char *argv[])
@@ -26,10 +23,10 @@ int main(int argc, char *argv[])
 
     // Step 2: Construct socket
     SOCKET client;
-    client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    client = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (client == INVALID_SOCKET)
     {
-        printf("Error %d: cannot create client socket\n", WSAGetLastError());
+        printf("Error %d: cannot create server socket\n", WSAGetLastError());
     }
     printf("Client started!\n");
 
@@ -54,17 +51,12 @@ int main(int argc, char *argv[])
     serverAddr.sin_port = htons(serverPort);
     inet_pton(AF_INET, serverAddrStr, &serverAddr.sin_addr);
 
-    // Step 4: Connect to server
-    if (connect(client, (sockaddr *)&serverAddr, sizeof(serverAddr)))
-    {
-        printf("Error %d: cannot connect to server\n", WSAGetLastError());
-    }
-    printf("Connected to server!\n");
-
-    // Step 5: Communicate with server
+    // Step 4: Communicate with server
     char buff[BUFF_SIZE];
+    int ret, serverAddrLen = sizeof(serverAddr);
     while (1)
     {
+        // Send message
         printf("Send to server: ");
         gets_s(buff, BUFF_SIZE);
         int messageLen = strlen(buff);
@@ -73,55 +65,36 @@ int main(int argc, char *argv[])
             break;
         }
 
-        int ret = send(client, buff, messageLen, 0);
+        ret = sendto(client, buff, messageLen, 0, (sockaddr *)&serverAddr, serverAddrLen);
         if (ret == SOCKET_ERROR)
         {
-            printf("Error %d: cannot send message to server\n", WSAGetLastError());
+            printf("Error %d: cannot send mesage\n", WSAGetLastError());
         }
 
-        // Receive  message
-        ret = recv(client, buff, BUFF_SIZE, 0);
+        // Receive echo message
+        ret = recvfrom(client, buff, BUFF_SIZE, 0, (sockaddr *)&serverAddr, &serverAddrLen);
         if (ret == SOCKET_ERROR)
         {
             if (WSAGetLastError() == WSAETIMEDOUT)
             {
-                printf("Error %d: time-out\n", WSAGetLastError());
+                printf("Time-out!\n");
             }
             else
             {
-                printf("Error %d: cannot receive message from server\n", WSAGetLastError());
+                printf("Error %d: cannot receive message\n", WSAGetLastError());
             }
         }
         else if (strlen(buff) > 0)
         {
-            // Resolve response
             buff[ret] = '\0';
-            if (buff[0] != RES_PREFIX_SUCCESS && buff[0] != RES_PREFIX_FAIL)
-            {
-                printf("Error: invalid prefix from server\n");
-            }
-            else if (buff[0] == RES_PREFIX_FAIL)
-            {
-                if (strcmp(buff + 1, "NaN") == 0)
-                {
-                    printf("Failed: String contains non-number character\n");
-                }
-                else
-                {
-                    printf("Error: %s\n", buff + 1);
-                }
-            }
-            else
-            {
-                printf("Sum of all digits: %s\n", buff + 1);
-            }
+            printf("Receive from server: %s\n", buff);
         }
     } // end while
 
-    // Step 6: Close socket
+    // Step 5: Close socket
     closesocket(client);
 
-    // Step 7: Terminate Winsock
+    // Step 6: Terminate Winsock
     WSACleanup();
 
     return 0;

@@ -1,4 +1,4 @@
-// UDP_Server.cpp : Defines the entry point for the console application.
+// Server.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -59,11 +59,17 @@ int main(int argc, char *argv[])
     {
         // Receive message
         ret = recvfrom(server, buff, BUFF_SIZE, 0, (sockaddr *)&clientAddr, &clientAddrLen);
-        if (ret == SOCKET_ERROR)
+        if (ret == SOCKET_ERROR && WSAGetLastError() != WSAECONNRESET)
         {
             printf("Error %d: cannot receive data\n", WSAGetLastError());
+            break;
         }
-        else if (strlen(buff) > 0)
+        else if (ret == 0 || WSAGetLastError() == WSAECONNRESET)
+        {
+            buff[0] = '\0';
+            break;
+        }
+        else
         {
             buff[ret] = '\0';
             char clientIP[INET_ADDRSTRLEN];

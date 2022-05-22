@@ -1,4 +1,4 @@
-// TCP_Server.cpp : Defines the entry point for the console application.
+// Server.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
@@ -9,9 +9,6 @@
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 5500
 #define BUFF_SIZE 2048
-#define RES_PREFIX_SUCCESS '+'
-#define RES_PREFIX_FAIL '-'
-#define ENDING_DELIMITER "\r\n"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -26,8 +23,7 @@ int main(int argc, char *argv[])
     }
 
     // Step 2: Construct socket
-    SOCKET listenSock;
-    listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    SOCKET listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (listenSock == INVALID_SOCKET)
     {
         printf("Error %d: cannot create server socket\n", WSAGetLastError());
@@ -67,35 +63,31 @@ int main(int argc, char *argv[])
     SOCKET connSock;
     while (1)
     {
-        while (1)
+        connSock = accept(listenSock, (sockaddr *)&clientAddr, &clientAddrLen);
+        if (connSock == SOCKET_ERROR)
         {
-            connSock = accept(listenSock, (sockaddr *)&clientAddr, &clientAddrLen);
-            if (connSock == SOCKET_ERROR)
-            {
-                printf("Error %d: cannot permit incoming connection\n", WSAGetLastError());
-            }
-            else
-            {
-                inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP, sizeof(clientIP));
-                clientPort = ntohs(clientAddr.sin_port);
-                printf("Accept incoming connection from [%s:%d]\n", clientIP, clientPort);
-                break;
-            }
+            printf("Error %d: cannot permit incoming connection\n", WSAGetLastError());
+            break;
+        }
+        else
+        {
+            inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP, sizeof(clientIP));
+            clientPort = ntohs(clientAddr.sin_port);
+            printf("Accept incoming connection from [%s:%d]\n", clientIP, clientPort);
         }
 
         while (1)
         {
-            // Receive message
+            // Receive request
             ret = recv(connSock, buff, BUFF_SIZE, 0);
-            if (ret == SOCKET_ERROR)
+            if (ret == SOCKET_ERROR && WSAGetLastError() != WSAECONNRESET)
             {
                 printf("Error %d: cannot receive data\n", WSAGetLastError());
                 break;
             }
-            else if (ret == 0)
+            else if (ret == 0 || WSAGetLastError() == WSAECONNRESET)
             {
-                printf("Client [%s:%d] disconnected!\n", clientIP, clientPort);
-                closesocket(connSock);
+                buff[0] = '\0';
                 break;
             }
             else
@@ -103,37 +95,7 @@ int main(int argc, char *argv[])
                 buff[ret] = '\0';
                 printf("Receive from client [%s:%d]: %s\n", clientIP, clientPort, buff);
 
-                // Solve request
-                bool validReq = true;
-                int sum = 0;
-                for (size_t i = 0; i < strlen(buff); ++i)
-                {
-                    if (buff[i] >= '0' && buff[i] <= '9')
-                    {
-                        sum += buff[i] - '0';
-                    }
-                    else
-                    {
-                        validReq = false;
-                        break;
-                    }
-                }
-                if (validReq)
-                {
-                    char sumStr[BUFF_SIZE];
-                    sprintf_s(sumStr, BUFF_SIZE, "%d", sum);
-                    memset(buff, 0, BUFF_SIZE);
-                    buff[0] = RES_PREFIX_SUCCESS;
-                    strcat_s(buff, BUFF_SIZE, sumStr);
-                }
-                else
-                {
-                    memset(buff, 0, BUFF_SIZE);
-                    buff[0] = RES_PREFIX_FAIL;
-                    strcat_s(buff, BUFF_SIZE, "NaN");
-                }
-
-                // Send to client
+                // Send response
                 ret = send(connSock, buff, strlen(buff), 0);
                 if (ret == SOCKET_ERROR)
                 {
@@ -143,6 +105,7 @@ int main(int argc, char *argv[])
             }
         } // end communicating
 
+        printf("Client [%s:%d] disconnected!\n", clientIP, clientPort);
         closesocket(connSock);
     } // end while
 
