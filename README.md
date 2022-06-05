@@ -242,6 +242,6 @@ Kinh dị và không thi đến (bài duy nhất lập trình với Win32 API). 
 
 ## Kỹ thuật vào ra theo sự kiện
 
-Kinh dị và không thi đến (đùa chứ đã làm bài tập với 'WSAAsyncSelect()` rồi, cái này là `WSAEventSelect()`). Bỏ qua.
+Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyncSelect()` rồi, cái này là `WSAEventSelect()`). Bỏ qua.
 
 ## Kỹ thuật vào ra overlapped
