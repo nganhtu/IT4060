@@ -237,3 +237,11 @@ int select(
 	- Sơ đồ ở [trang 14](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode.pdf).
 
 ## Kỹ thuật vào ra theo thông báo
+
+Kinh dị và không thi đến (bài duy nhất lập trình với Win32 API). Bỏ qua.
+
+## Kỹ thuật vào ra theo sự kiện
+
+Kinh dị và không thi đến (đùa chứ đã làm bài tập với 'WSAAsyncSelect()` rồi, cái này là `WSAEventSelect()`). Bỏ qua.
+
+## Kỹ thuật vào ra overlapped

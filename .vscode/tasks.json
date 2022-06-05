@@ -1,0 +1,67 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "cute",
+            "command": "g++" /* C:\\Program%20Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe */,
+            "args": [
+                "${file}",
+                "-o" /* writes the build output to an output file */,
+                "${fileDirname}\\${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "link Winsock Library",
+            "command": "g++" /* C:\\Program%20Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe */,
+            "args": [
+                "${file}",
+                "-o" /* writes the build output to an output file */,
+                "${fileDirname}\\${fileBasenameNoExtension}",
+                "-lws2_32" /* #pragma comment(lib, "Ws2_32.lib") ignored by GCC */
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "link GNU Multiple Precision Arithmetic Library",
+            "command": "g++" /* C:\\Program%20Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe */,
+            "args": [
+                "${file}",
+                "-o" /* writes the build output to an output file */,
+                "${fileDirname}\\${fileBasenameNoExtension}",
+                "-lgmp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
