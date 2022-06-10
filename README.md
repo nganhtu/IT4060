@@ -245,3 +245,17 @@ Kinh dị và không thi đến (bài duy nhất lập trình với Win32 API). 
 Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyncSelect()` rồi, cái này là `WSAEventSelect()`). Bỏ qua.
 
 ## Kỹ thuật vào ra overlapped
+
+- Sử dụng cấu trúc WSAOVERLAPPED chứa thông tin về các thao tác vào ra.
+- Socket phải được khởi tạo với cờ điều kiển tương ứng.
+- Sử dụng các hàm đặc trưng với kỹ thuật overlapped.
+- Hiệu năng cao hơn do có thể gửi đồng thời nhiều yêu cầu tới hệ thống.
+- Các phương pháp xử lý kết quả:
+	- Đợi thông báo từ một sự kiện.
+	- Thực hiện một thủ tục CALLBACK (completion routine).
+- Hàm `WSASocket()` để khởi tạo socket. Để socket ở chế độ overlapped, gán cờ WSA_FALG_OVERLAPPED cho tham số `dwFlags`.
+- Hàm `WSASend()` gửi dữ liệu với cơ chế overlapped trên trên nhiều bộ đệm. Trả về 0 hoặc WSA_IO_PENDING.
+- Hàm `WSARecv()` nhận dữ liệu với cơ chế overlapped trên trên nhiều bộ đệm. Trả về 0 hoặc WSA_IO_PENDING.
+- Cấu trúc `WSABUF`.
+- Sơ đồ à các bước sử dụng kỹ thuật overlapped - xử lý qua sự kiện: [trang 10](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf).
+- Hàm `WSAGetOverlappedResult()` lấy kết quả thực hiện thao tác vào ra trên socket.
