@@ -169,7 +169,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
                             client[i] = connSock;
                             // requests Windows message-based notification of network events for connSock
                             WSAAsyncSelect(client[i], hWnd, WM_SOCKET, FD_READ | FD_CLOSE);
-                            MessageBox(hWnd, L"Client connected", L"Info", MB_OK);
                             break;
                         }
                     }
