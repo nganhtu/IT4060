@@ -40,12 +40,13 @@ int main(int argc, char *argv[]) {
     if (bind(listenSock, (sockaddr *)&serverAddr, sizeof(serverAddr))) {
         printf("Error %d: cannot bind this address\n", WSAGetLastError());
     }
-    printf("Server started!\n");
 
     // Step 4: Listen request from client
     if (listen(listenSock, 10)) {
         printf("Error %d: cannot place server socket in state LISTEN\n", WSAGetLastError());
     }
+
+    printf("Server started!\n");
 
     // Step 5: Communicate with client
     sockaddr_in clientAddr;
