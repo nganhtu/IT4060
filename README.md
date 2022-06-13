@@ -253,7 +253,7 @@ Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyn
 - Các phương pháp xử lý kết quả:
 	- Đợi thông báo từ một sự kiện.
 	- Thực hiện một thủ tục CALLBACK (completion routine).
-- Hàm `WSASocket()` để khởi tạo socket. Để socket ở chế độ overlapped, gán cờ WSA_FALG_OVERLAPPED cho tham số `dwFlags`.
+- Hàm `WSASocket()` để khởi tạo socket. Để socket ở chế độ overlapped, gán cờ WSA_FLAG_OVERLAPPED cho tham số `dwFlags`.
 - Hàm `WSASend()` gửi dữ liệu với cơ chế overlapped trên trên nhiều bộ đệm. Trả về 0 hoặc WSA_IO_PENDING.
 - Hàm `WSARecv()` nhận dữ liệu với cơ chế overlapped trên trên nhiều bộ đệm. Trả về 0 hoặc WSA_IO_PENDING.
 - Cấu trúc `WSABUF`.
