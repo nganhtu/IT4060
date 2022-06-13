@@ -160,6 +160,12 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+/**
+ * Safe way to get a long number from standard input.
+ * This function will not stop until a valid long is entered.
+ *
+ * @return number from standard input
+ */
 long enterLong() {
     long n;
     char *p, s[20];
@@ -174,6 +180,7 @@ long enterLong() {
     return n;
 }
 
+// Safe way to ask user to enter mode
 int enterMode() {
     int mode = OPCODE_INVALID;
     while (mode == OPCODE_INVALID) {
@@ -187,6 +194,7 @@ int enterMode() {
     return mode;
 }
 
+// Safe way to ask user to enter key between [0, 255]
 int enterKey() {
     int key = -1;
     while (key == -1) {
@@ -214,6 +222,13 @@ int countDigit(int n) {
     return count;
 }
 
+/**
+ * Convert number from int to const char *
+ *
+ * @param num number
+ * @param fixedSize fixed size of number. If fixedSize is 0, there is no 0s in front of number
+ * @return number in const char *
+ */
 const char *numToStr(int num, int fixedSize) {
     char *result = (char *)malloc(sizeof(char) * BUFF_SIZE), tmp[BUFF_SIZE];
     strcpy_s(result, BUFF_SIZE, "");
@@ -241,6 +256,7 @@ int strToNum(const char *str) {
     return res;
 }
 
+// Create opcode and length of a message, for example: "20000"
 const char *createOpcodeAndLength(int opcode, int length) {
     char *res = (char *)malloc(sizeof(char) * BUFF_SIZE);
     strcpy_s(res, BUFF_SIZE, "");
