@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
             printf("Error %d: cannot send message to server\n", WSAGetLastError());
         }
 
-        // Receive  response
+        // Receive response
         ret = recv(client, buff, BUFF_SIZE, 0);
         if (ret == SOCKET_ERROR) {
             if (WSAGetLastError() == WSAETIMEDOUT) {
