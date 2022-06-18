@@ -1,7 +1,12 @@
-Lỗi LNK2019: kiểm tra `#pragma comment(lib, "ws2_32.lib")`.
+Đề bài tập tuần copy từ tuần trước hơi ảo ma.
 
-Khi debug có thể in thông báo về thông tin của client, chẳng hạn như IP và port. Tuy nhiên bản final không nên có vì [thông tin in ra cần phải lưu trữ trong biến kiểu `char *`](https://stackoverflow.com/questions/21620752/display-a-variable-in-messagebox-c).
+---
 
-___
+Tập `readfds` chứa các socket được thăm dò ở trạng thái có thể đọc. Trong code mẫu và bài tập tuần, đó là `listenSock` và các mảng các `connSock`. Khi hàm `select()` thực thi, các socket không
+mang trạng thái đọc sẽ bị xóa khỏi tập `readfds`. Sau đó sử dụng macro `FD_ISSET()` để kiểm tra sự có mặt của socket trong tập `readfds` và xử lý.
 
-Lưu ý quan trọng: đóng con trỏ file trước khi xóa file (bởi vì đang mở file thì không xóa file được).
+Lưu ý: biến `nEvents` lưu kết quả của hàm `select()`, nói cách khác lưu tổng số socket (cả `listenSock` và `connSock`) ở trong trạng thái có thể đọc.
+
+---
+
+**Issue:** `strcpy_s(sendBuff, BUFF_SIZE, recvBuff);` gây lỗi buffer size is too small trong khi `memcpy_s(sendBuff, BUFF_SIZE, recvBuff, BUFF_SIZE);` hoạt động bình thường.
