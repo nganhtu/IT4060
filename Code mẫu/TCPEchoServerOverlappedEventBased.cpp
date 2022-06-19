@@ -21,7 +21,7 @@ typedef struct SocketInfo {
     char buff[BUFF_SIZE];
     int operation;
     int sentBytes;
-    int recvBytes;
+    int bytesNeedToSend;
 } SocketInfo;
 
 void freeSocketInfo(SocketInfo *siArray[], int n);
@@ -117,8 +117,8 @@ int main(int argc, char *argv[]) {
                 socks[i]->dataBuf.buf = socks[i]->buff;
                 socks[i]->dataBuf.len = BUFF_SIZE;
                 socks[i]->operation = RECEIVE;
-                socks[i]->recvBytes = 0;
                 socks[i]->sentBytes = 0;
+                socks[i]->bytesNeedToSend = 0;
 
                 nEvents++;
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 
             // Check to see if a WSARecv() call just completed
             if (client->operation == RECEIVE) {
-                client->recvBytes = transferredBytes;
+                client->bytesNeedToSend = transferredBytes;
                 client->sentBytes = 0;
                 client->operation = SEND;
             } else {
@@ -159,9 +159,9 @@ int main(int argc, char *argv[]) {
             // Post another I/O operation
             // Since WSASend() is not guaranteed to send all of the bytes requested,
             // continue posting WSASend() calls until all received bytes are sent.
-            if (client->recvBytes > client->sentBytes) {
+            if (client->sentBytes < client->bytesNeedToSend) {
                 client->dataBuf.buf = client->buff + client->sentBytes;
-                client->dataBuf.len = client->recvBytes - client->sentBytes;
+                client->dataBuf.len = client->bytesNeedToSend - client->sentBytes;
                 client->operation = SEND;
                 if (WSASend(client->socket, &(client->dataBuf), 1, &transferredBytes, flags, &(client->overlapped), NULL) == SOCKET_ERROR) {
                     if (WSAGetLastError() != WSA_IO_PENDING) {
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
                 // No more bytes to send post another WSARecv() request
                 memset(&(client->overlapped), 0, sizeof(WSAOVERLAPPED));
                 client->overlapped.hEvent = events[index];
-                client->recvBytes = 0;
+                client->bytesNeedToSend = 0;
                 client->operation = RECEIVE;
                 client->dataBuf.buf = client->buff;
                 client->dataBuf.len = BUFF_SIZE;
