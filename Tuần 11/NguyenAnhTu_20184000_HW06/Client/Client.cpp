@@ -89,11 +89,16 @@ int main(int argc, char *argv[]) {
         sBuff[ret] = '\0';
 
         char clientFilePath[BUFF_SIZE];
-        printf("Enter file path: ");
-        gets_s(clientFilePath, BUFF_SIZE);
-
         FILE *pCli;
-        errno_t err = fopen_s(&pCli, clientFilePath, "rb");
+        errno_t err = -1;
+        while (err != 0) {
+            printf("Enter file path: ");
+            gets_s(clientFilePath, BUFF_SIZE);
+            err = fopen_s(&pCli, clientFilePath, "rb");
+            if (err != 0) {
+                printf("Error %d: cannot open file\n", err);
+            }
+        }
 
         while (!feof(pCli)) {
             memset(vBuff, 0, BUFF_SIZE);
@@ -123,7 +128,13 @@ int main(int argc, char *argv[]) {
         } else if (mode == OPCODE_DECODE) {
             strcat_s(clientFilePath, ".dec");
         }
-        err = fopen_s(&pCli, clientFilePath, "wb");
+        err = -1;
+        while (err != 0) {
+            err = fopen_s(&pCli, clientFilePath, "wb");
+            if (err != 0) {
+                printf("Error %d: cannot open file\n", err);
+            }
+        }
 
         while (1) {
             ret = recv(client, sBuff, BUFF_SIZE, 0);
@@ -149,6 +160,8 @@ int main(int argc, char *argv[]) {
         }
 
         fclose(pCli);
+
+        printf("File has been %s successfully! Path: %s\n", mode == OPCODE_ENCODE ? "encoded" : "decoded", clientFilePath);
     }  // end while
 
     // Step 6: Close socket
@@ -180,7 +193,12 @@ long enterLong() {
     return n;
 }
 
-// Safe way to ask user to enter mode
+/**
+ * Safe way to ask user to enter mode.
+ * This function will not stop until a valid long is entered.
+ *
+ * @return mode as an int
+ */
 int enterMode() {
     int mode = OPCODE_INVALID;
     while (mode == OPCODE_INVALID) {
@@ -194,7 +212,12 @@ int enterMode() {
     return mode;
 }
 
-// Safe way to ask user to enter key between [0, 255]
+/**
+ * Safe way to ask user to enter key between [0, 255].
+ * This function will not stop until a valid long is entered.
+ *
+ * @return key as an int
+ */
 int enterKey() {
     int key = -1;
     while (key == -1) {
@@ -208,6 +231,11 @@ int enterKey() {
     return key;
 }
 
+/**
+ * Count digits in a non-negative integer
+ *
+ * @param n integer need to count digits
+ */
 int countDigit(int n) {
     if (n == 0) {
         return 1;
@@ -223,7 +251,7 @@ int countDigit(int n) {
 }
 
 /**
- * Convert number from int to const char *
+ * Convert a non-negative number from int to const char *
  *
  * @param num number
  * @param fixedSize fixed size of number. If fixedSize is 0, there is no 0s in front of number
@@ -246,6 +274,12 @@ const char *numToStr(int num, int fixedSize) {
     return result;
 }
 
+/**
+ * Convert a non-negative integer from C string to int
+ *
+ * @param str pointer to the string that holds integer
+ * @return integer in int type
+ */
 int strToNum(const char *str) {
     int res = 0, digit = 1;
     for (int i = strlen(str) - 1; i >= 0; --i) {
@@ -256,7 +290,13 @@ int strToNum(const char *str) {
     return res;
 }
 
-// Create opcode and length of a message, for example: "20000"
+/**
+ * Create a part of a message include opcode and length
+ *
+ * @param opcode opcode
+ * @param length length of the payload
+ * @return pointer to a C string holds message
+ */
 const char *createOpcodeAndLength(int opcode, int length) {
     char *res = (char *)malloc(sizeof(char) * BUFF_SIZE);
     strcpy_s(res, BUFF_SIZE, "");

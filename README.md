@@ -259,3 +259,11 @@ Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyn
 - Cấu trúc `WSABUF`.
 - Sơ đồ à các bước sử dụng kỹ thuật overlapped - xử lý qua sự kiện: [trang 10](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf).
 - Hàm `WSAGetOverlappedResult()` lấy kết quả thực hiện thao tác vào ra trên socket.
+
+## Overlapped I/O – Completion routine
+- Hệ thống sẽ thông báo cho ứng dụng biết thao tác vào ra kết thúc thông qua hàm `CompletionROUTINE()`.
+- WinSock sẽ bỏ qua trường `event` trong cấu trúc OVERLAPPED, việc tạo đối tượng event và thăm dò là
+không cần thiết nữa.
+- Lưu ý: completion routine không thực hiện được các tác vụ nặng.
+- Ứng dụng cần chuyển luồng sang trạng thái alertable ngay sau khi gửi yêu cầu vào ra. Sử dụng hàm `WSAWaitForMultipleEvents()` (hoặc `SleepEx()` nếu ứng dụng không có đối tượng event nào).
+- Sơ đồ: [trang 14](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf)

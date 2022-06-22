@@ -166,6 +166,7 @@ int main(int argc, char *argv[]) {
                 socks[i]->sentBytes = 0;
                 socks[i]->bytesNeedToSend = 0;
                 sessions[i].phase = PHASE_RECVKEYSIZE;
+                sessions[i].pSer = NULL;
 
                 nEvents++;
 
@@ -197,6 +198,9 @@ int main(int argc, char *argv[]) {
 
             // Check to see if a WSARecv() call just completed
             if (client->operation == RECEIVE) {
+                client->buff[transferredBytes] = '\0';
+                printf("Received: %s\n", client->buff);
+
                 switch (sessions[index].phase) {
                     case PHASE_RECVKEYSIZE: {
                         client->buff[transferredBytes] = '\0';
@@ -370,6 +374,11 @@ void closeEventInArray(WSAEVENT eventArr[], int n) {
     }
 }
 
+/**
+ * Count digits in a non-negative integer
+ *
+ * @param n integer need to count digits
+ */
 int countDigit(int n) {
     if (n == 0) {
         return 1;
@@ -385,7 +394,7 @@ int countDigit(int n) {
 }
 
 /**
- * Convert number from int to const char *
+ * Convert a non-negative number from int to const char *
  *
  * @param num number
  * @param fixedSize fixed size of number. If fixedSize is 0, there is no 0s in front of number
@@ -408,6 +417,12 @@ const char *numToStr(int num, int fixedSize) {
     return result;
 }
 
+/**
+ * Convert a non-negative integer from C string to int
+ *
+ * @param str pointer to the string that holds integer
+ * @return integer in int type
+ */
 int strToNum(const char *str) {
     int res = 0, digit = 1;
     for (int i = strlen(str) - 1; i >= 0; --i) {
@@ -418,7 +433,13 @@ int strToNum(const char *str) {
     return res;
 }
 
-// Create opcode and length of a message, for example: "20000"
+/**
+ * Create a part of a message include opcode and length
+ *
+ * @param opcode opcode
+ * @param length length of the payload
+ * @return pointer to a C string holds message
+ */
 const char *createOpcodeAndLength(int opcode, int length) {
     char *res = (char *)malloc(sizeof(char) * BUFF_SIZE);
     strcpy_s(res, BUFF_SIZE, "");
@@ -428,7 +449,11 @@ const char *createOpcodeAndLength(int opcode, int length) {
     return res;
 }
 
-// Generate a random name for temporary file, for example: "tmp_12345"
+/**
+ * Generate a random name for temporary file in format "tmp_xxxxx"
+ *
+ * @return pointer to a C string holds generated name
+ */
 const char *generateTmpFileName() {
     char *res = (char *)malloc(sizeof(char) * BUFF_SIZE);
     strcpy_s(res, BUFF_SIZE, "");
@@ -438,6 +463,13 @@ const char *generateTmpFileName() {
     return res;
 }
 
+/**
+ * Encode an integer using shift cipher
+ *
+ * @param k key in range [0, 255]
+ * @param c integer need to encode in range [-128, 127]
+ * @return encoded integer in range [-128, 127]
+ */
 int encode(int k, int c) {
     int res = c + 128;
     res = (res + k) % 256;
@@ -446,6 +478,13 @@ int encode(int k, int c) {
     return res;
 }
 
+/**
+ * Decode an integer using shift cipher
+ *
+ * @param k key in range [0, 255]
+ * @param c integer need to decode in range [-128, 127]
+ * @return decoded integer in range [-128, 127]
+ */
 int decode(int k, int c) {
     int res = c + 128;
     res = (res - k + 256) % 256;
@@ -480,11 +519,16 @@ void decode(int k, void *buff, int length) {
     }
 }
 
-// Remove temporary file, close file stream, and return to phase PHASE_RECVKEYSIZE
+/**
+ * Return to phase PHASE_RECVKEYSIZE,close file stream, and remove temporary file
+ *
+ * @param s pointer to the session need to clear
+ */
 void clearSession(Session *s) {
     s->phase = PHASE_RECVKEYSIZE;
     if (s->pSer != NULL) {
         fclose(s->pSer);
+        s->pSer = NULL;
     }
     remove(s->serverFilePath);
 }
