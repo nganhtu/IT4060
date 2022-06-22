@@ -198,9 +198,6 @@ int main(int argc, char *argv[]) {
 
             // Check to see if a WSARecv() call just completed
             if (client->operation == RECEIVE) {
-                client->buff[transferredBytes] = '\0';
-                printf("Received: %s\n", client->buff);
-
                 switch (sessions[index].phase) {
                     case PHASE_RECVKEYSIZE: {
                         client->buff[transferredBytes] = '\0';
