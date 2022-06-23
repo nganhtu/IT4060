@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     char serverAddrStr[BUFF_SIZE] = SERVER_ADDR;
     int serverPort = SERVER_PORT;
     if (argc != 3) {
-        printf("Usage: UDP_Client <server_addr> <server_port>\n");
+        printf("Usage: Client <server_addr> <server_port>\n");
     } else {
         strcpy_s(serverAddrStr, BUFF_SIZE, argv[1]);
         serverPort = atoi(argv[2]);

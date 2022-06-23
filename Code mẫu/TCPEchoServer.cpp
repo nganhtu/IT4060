@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     // Step 3: Bind address to socket
     int serverPort = SERVER_PORT;
     if (argc != 2) {
-        printf("Usage: UDP_Server <port>\n");
+        printf("Usage: Server <port>\n");
     } else {
         serverPort = atoi(argv[1]);
     }
