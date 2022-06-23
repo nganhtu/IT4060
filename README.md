@@ -261,9 +261,29 @@ Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyn
 - Hàm `WSAGetOverlappedResult()` lấy kết quả thực hiện thao tác vào ra trên socket.
 
 ## Overlapped I/O – Completion routine
+
 - Hệ thống sẽ thông báo cho ứng dụng biết thao tác vào ra kết thúc thông qua hàm `CompletionROUTINE()`.
 - WinSock sẽ bỏ qua trường `event` trong cấu trúc OVERLAPPED, việc tạo đối tượng event và thăm dò là
 không cần thiết nữa.
 - Lưu ý: completion routine không thực hiện được các tác vụ nặng.
 - Ứng dụng cần chuyển luồng sang trạng thái alertable ngay sau khi gửi yêu cầu vào ra. Sử dụng hàm `WSAWaitForMultipleEvents()` (hoặc `SleepEx()` nếu ứng dụng không có đối tượng event nào).
 - Sơ đồ: [trang 14](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf)
+
+## Overlapped I/O – Completion port
+
+- Completion port tổ chức một hàng đợi cho các luồng và giám sát các sự kiện vào ra trên các socket. Mỗi khi thao tác vào ra hoàn thành trên socket, completion port kích hoạt một luồng để xử lý.
+- Hàm `CreateIoCompletionPort()` dùng để tạo một completion port.
+- Sơ đồ mô tả việc sử dụng completion port: [trang 18](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf).
+- WorkerThread gọi hàm `GetQueuedCompletionStatus()` đợi thao tác vào ra hoàn thành trên completion port và lấy kết quả thực hiện. Trả về FALSE nếu thao tác vào ra lỗi. Tham số lpCompletionKey và lpOverlapped chứa dữ liệu và kết quả của thao tác vào ra.
+- Mỗi completion port có thể sử dụng nhiều luồng điều khiển vào ra. Tránh giải phóng cấu trúc OVERLAPPED trên một luồng trong khi đang thực hiện vào ra.
+- Gọi hàm `PostQueuedCompletionStatus()` để gửi một packet có kích thước 0 tới completion port trên tất cả các luồng. Gọi hàm `CloseHandle()` để đóng completion port.
+
+## Tổng kết
+
+- Kỹ thuật đa luồng: đơn giản; sử dụng tài nguyên không hiệu quả, không áp dụng cho ứng dụng phục vụ quá nhiều client.
+- Kỹ thuật thăm dò: đơn giản; giới hạn bởi cấu trúc fd_set chỉ quản lý được 1024 socket; hàm `select()` không hiệu quả khi quản lý nhiều socket nên không áp dụng cho ứng dụng phục vụ quá nhiều client.
+- Kỹ thuật vào ra theo thông báo: đơn giản; yêu cầu ứng dụng phải có cửa sổ, nó trở thành nút thắt cổ chai trong ứng dụng nếu phải xử lý quá nhiều kết nối.
+- Kỹ thuật vào ra theo sự kiện: đơn giản, không yêu cầu ứng dụng phải có cửa sổ; mỗi luồng chỉ quản lý được 64 bộ nghe sự kiện.
+- Kỹ thuật vào ra overlapped theo sự kiện: hiệu năng cao; mỗi luồng chỉ quản lý được 64 bộ nghe sự kiện.
+- Kỹ thuật vào ra overlapped, xử lý bằng completon routine: hiệu năng cao, không hạn chế số kết nối có thể xử lý; không thực hiện được các tác vụ nặng.
+- Kỹ thuật vào ra overlapped theo completion port: hiệu năng cao, không hạn chế số kết nối có thể xử lý; khó sử dụng.
