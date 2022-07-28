@@ -140,7 +140,7 @@ shutdown(client, SD_RECEIVE);
 
 ## Xây dựng giao thức cho ứng dụng
 
-Xem [trang ]30](https://users.soict.hust.edu.vn/tungbt/it4060/Lec02.BasicSocket.pdf).
+Xem [trang 30](https://users.soict.hust.edu.vn/tungbt/it4060/Lec02.BasicSocket.pdf).
 
 # Bài 3. Các chế độ vào ra trên socket
 
