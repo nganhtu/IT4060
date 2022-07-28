@@ -163,8 +163,8 @@ Xem [trang 30](https://users.soict.hust.edu.vn/tungbt/it4060/Lec02.BasicSocket.p
 ## Kỹ thuật đa luồng
 
 - Giải quyết vấn đề chặn dừng bằng cách tạo ra các luồng riêng biệt với hàm `_beginthreadex()`.
-- Sơ đồ luồng chính: `socket()` → `bind()` → `listen()` → {`accept()` → `_beginthreadex() → other task → quay lại `accept()`}
-- Một số hàm xử lý luồng: [trang 8](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode.pdf)
+- Sơ đồ luồng chính: `socket()` → `bind()` → `listen()` → {`accept()` → `_beginthreadex()` → other task → quay lại `accept()`}
+- Một số hàm xử lý luồng: [trang 8](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode.pdf).
 - Điều độ luồng sử dụng đoạn găng:
 	- Khai báo đoạn găng: `CRITICAL_SECTION`
 	- Khởi tạo đoạn găng: `void InitializeCriticalSection(CRITICAL_SECTION *);`
