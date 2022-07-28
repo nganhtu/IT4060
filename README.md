@@ -267,7 +267,7 @@ Kinh dị và không thi đến (đùa chứ đã làm bài tập với `WSAAsyn
 không cần thiết nữa.
 - Lưu ý: completion routine không thực hiện được các tác vụ nặng.
 - Ứng dụng cần chuyển luồng sang trạng thái alertable ngay sau khi gửi yêu cầu vào ra. Sử dụng hàm `WSAWaitForMultipleEvents()` (hoặc `SleepEx()` nếu ứng dụng không có đối tượng event nào).
-- Sơ đồ: [trang 14](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf)
+- Sơ đồ: [trang 14](https://users.soict.hust.edu.vn/tungbt/it4060/Lec03.IOMode(cont).pdf).
 
 ## Overlapped I/O – Completion port
 
